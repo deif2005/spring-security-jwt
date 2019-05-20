@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * jwt认证token实体类
+ */
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 3981518947978158945L;
 	

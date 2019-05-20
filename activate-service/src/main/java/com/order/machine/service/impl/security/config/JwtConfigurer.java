@@ -17,7 +17,7 @@ public class JwtConfigurer<T extends JwtConfigurer<T,B>, B extends HttpSecurityB
         AbstractHttpConfigurer<T, B> {
 
 //    @Autowired
-    JwtAuthenticationFilter authFilter;
+    private JwtAuthenticationFilter authFilter;
 
 //    private LoginAuthenticationFailureHandler failureHandler;
 
@@ -34,7 +34,11 @@ public class JwtConfigurer<T extends JwtConfigurer<T,B>, B extends HttpSecurityB
         http.addFilterBefore(filter, LogoutFilter.class);
     }
 
-    //设置匿名用户可访问url
+    /**
+     * 设置匿名用户可访问url
+     * @param urls
+     * @return
+     */
     public JwtConfigurer<T, B> permissiveRequestUrls(String ... urls){
         authFilter.setPermissiveRequestMatchers(urls);
         return this;

@@ -39,7 +39,7 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
                                         Authentication authentication) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
 //        String jwt = jwtUtil.getToken(new UserPo(null,userDetails.getUsername(),userDetails.getPassword()));
-        String jwt = userDetailsService.saveUserLoginInfo((UserDetails)authentication.getPrincipal());
+        String jwt = userDetailsService.saveUserLoginInfo(userDetails);
         httpServletResponse.setContentType("application/json;charset=utf-8");
         httpServletResponse.setHeader("Authorization",jwt);
         PrintWriter out = httpServletResponse.getWriter();

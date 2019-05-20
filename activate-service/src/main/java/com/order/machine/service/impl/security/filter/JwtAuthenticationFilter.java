@@ -31,6 +31,7 @@ import java.util.List;
 /**
  * @author miou
  * @date 2019-05-14
+ * jwt认证过滤器 用于判断请求是否需要验证以及请求中的token信息是否合法
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -40,21 +41,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
     private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
 
-
+    /**
+     * 拦截带authorization的请求
+     */
     public JwtAuthenticationFilter() {
         this.requiresAuthenticationRequestMatcher = new RequestHeaderRequestMatcher("Authorization");
     }
 
+    /**
+     * 获取header中authorization的token值
+     * @param request
+     * @return
+     */
     protected String getJwtToken(HttpServletRequest request) {
         String authInfo = request.getHeader("Authorization");
         return StringUtils.removeStart(authInfo, "Bearer ");
     }
 
-    protected boolean requiresAuthentication(HttpServletRequest request,
-                                             HttpServletResponse response) {
+    /**
+     * 匹配请求参数
+     * @param request
+     * @param response
+     * @return
+     */
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         return requiresAuthenticationRequestMatcher.matches(request);
     }
 
+    /**
+     * 认证请求中的token信息是否合法
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -79,9 +100,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("JWT format error", e);
             failed = new InsufficientAuthenticationException("JWT format error", failed);
         }catch (InternalAuthenticationServiceException e) {
-            logger.error(
-                    "An internal error occurred while trying to authenticate the user.",
-                    failed);
+            logger.error("An internal error occurred while trying to authenticate the user.", failed);
             failed = e;
         }catch (AuthenticationException e) {
             // Authentication failed
@@ -97,13 +116,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    protected void successfulAuthentication(HttpServletRequest request,
-                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
+    /**
+     * 认证成功
+     * 设置securitycontext
+     * @param request
+     * @param response
+     * @param chain
+     * @param authResult
+     * @throws IOException
+     * @throws ServletException
+     */
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain chain, Authentication authResult)
             throws IOException, ServletException{
         SecurityContextHolder.getContext().setAuthentication(authResult);
         successHandler.onAuthenticationSuccess(request, response, authResult);
     }
 
+    /**
+     * 设置不拦截请求
+     * @param request
+     * @return
+     */
     protected boolean permissiveRequest(HttpServletRequest request) {
         if(permissiveRequestMatchers == null)
             return false;
@@ -114,6 +148,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return false;
     }
 
+    /**
+     * 设置认证失败处理
+     * @param request
+     * @param response
+     * @param failed
+     * @throws IOException
+     * @throws ServletException
+     */
     protected void unsuccessfulAuthentication(HttpServletRequest request,
                                               HttpServletResponse response, AuthenticationException failed)
             throws IOException, ServletException {

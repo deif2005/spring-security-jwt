@@ -16,11 +16,6 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 public class JsonLoginConfigurer <T extends JsonLoginConfigurer<T, B>, B extends HttpSecurityBuilder<B>>
         extends AbstractHttpConfigurer<T, B> {
 
-//    @Autowired
-//    private UsernamePasswordAuthenticationFilter authFilter;
-//    @Autowired
-//    private LoginAuthenticationFailureHandler failureHandler;
-
     private UsernamePasswordAuthenticationFilter authFilter;
 
     public JsonLoginConfigurer() {
