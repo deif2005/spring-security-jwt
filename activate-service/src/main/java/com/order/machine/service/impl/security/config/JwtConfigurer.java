@@ -12,14 +12,12 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 /**
  * @author miou
  * @date 2019-05-15
+ * 配置jwt校验的filter
  */
 public class JwtConfigurer<T extends JwtConfigurer<T,B>, B extends HttpSecurityBuilder<B>> extends
         AbstractHttpConfigurer<T, B> {
 
-//    @Autowired
     private JwtAuthenticationFilter authFilter;
-
-//    private LoginAuthenticationFailureHandler failureHandler;
 
     public JwtConfigurer(){
         this.authFilter = new JwtAuthenticationFilter();

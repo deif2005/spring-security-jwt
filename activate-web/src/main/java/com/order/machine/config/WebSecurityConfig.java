@@ -19,6 +19,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 /**
  * @author miou
  * @date 2019-05-08
+ * security认证总配置
  */
 
 //@Configuration

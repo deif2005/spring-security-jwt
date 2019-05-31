@@ -33,6 +33,7 @@ import java.util.Arrays;
 /**
  * @author miou
  * @date 2019-05-15
+ * security+jwt总配置文件
  */
 
 @Configuration
@@ -49,7 +50,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/article/**").hasRole("USER") //需登陆才能访问的url
                 .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
                 .and()
-                .csrf().disable()  //CRSF禁用，因为不使用session
+                .csrf().disable()  //CSRF禁用，因为不使用session
                 .sessionManagement().disable()  //禁用session
                 .formLogin().disable() //禁用form登录
                 .cors()  //支持跨域
@@ -63,7 +64,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler())
                 .and()
                 //添加token的filter
-                .apply(new JwtConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler()).permissiveRequestUrls("/logout")
+                .apply(new JwtConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler())
+                .permissiveRequestUrls("/logout")
                 .and()
                 //使用默认的logoutFilter
                 .logout()

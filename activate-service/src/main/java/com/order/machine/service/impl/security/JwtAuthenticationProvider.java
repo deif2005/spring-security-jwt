@@ -18,6 +18,7 @@ import java.util.Calendar;
 /**
  * @author miou
  * @date 2019-05-14
+ * jwt的验证实体提供者
  */
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
@@ -32,6 +33,14 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return authentication.isAssignableFrom(JwtAuthenticationToken.class);
     }
 
+    /**
+     * 认证token信息
+     * 根据jwt传递过来的用户名获取用户信息，与当前token比对
+     * 比对成功后将认证信息放入SecurityContext
+     * @param authentication
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         DecodedJWT jwt = ((JwtAuthenticationToken)authentication).getToken();

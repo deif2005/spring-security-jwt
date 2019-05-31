@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author miou
  * @date 2019-05-14
- * jwt认证过滤器 用于判断请求是否需要验证以及请求中的token信息是否合法
+ * jwt认证过滤器:用于判断请求是否需要验证以及请求中的token信息是否合法
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -69,7 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * 认证请求中的token信息是否合法
+     * 认证请求信息是否合法
+     * 利用AuthenticationManager中的AuthenticationProvider验证token
      * @param request
      * @param response
      * @param filterChain
@@ -80,7 +81,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         //header没带token的，直接放过，因为部分url匿名用户也可以访问
-        //如果需要不支持匿名用户的请求没带token，这里放过也没问题，因为SecurityContext中没有认证信息，后面会被权限控制模块拦截
+        //如果需要不支持匿名用户的请求没带token，这里放过也没问题，因为SecurityContext中没有认证信息，
+        //后面会被权限控制模块拦截
         if (!requiresAuthentication(request, response)) {
             filterChain.doFilter(request, response);
             return;

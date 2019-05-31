@@ -41,6 +41,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userMapper.select(userPo);
     }
 
+    /**
+     * 根据用户名获取用户信息，封装成UserDetails
+     * @param username
+     * @return
+     */
     public UserDetails getUserLoginInfo(String username) {
         String salt = "123456ef";
         /**
@@ -52,6 +57,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return User.builder().username(user.getUsername()).password(salt).authorities(user.getAuthorities()).build();
     }
 
+    /**
+     * 保存验证信息，salt设置有效时间，如果超过时间则无法使用salt来验证客户端传过来的token值
+     * @param user
+     * @return
+     */
     public String saveUserLoginInfo(UserDetails user) {
         String salt = "123456ef";
         //正式开发时可以调用该方法实时生成加密的salt
@@ -69,6 +79,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .sign(algorithm);
     }
 
+    /**
+     * 根据用户名获取用户信息，包括权限信息
+     * @param s
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         List<UserPo> userList = getByUserName(s);
