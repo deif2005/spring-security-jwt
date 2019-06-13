@@ -65,7 +65,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor { //OncePer
                 throw LogicException.le(CommonEnum.ReturnCode.SystemCode.sys_err_noauth.getValue(),
                         CommonEnum.ReturnMsg.SystemMsg.sys_err_noauth.getValue());
             }
-            UserPo user = userMapper.selectOne (new UserPo(null,userId,null));
+            UserPo user = userMapper.selectOne (new UserPo(userId,null));
             if (user == null) {
                 throw LogicException.le(CommonEnum.ReturnCode.UserLoginCode.user_login_UserNotExists.getValue(),
                         "用户未注册");

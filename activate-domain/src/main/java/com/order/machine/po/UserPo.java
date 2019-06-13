@@ -1,8 +1,6 @@
 package com.order.machine.po;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author miou
@@ -13,27 +11,22 @@ import javax.persistence.Table;
 public class UserPo {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
+    //    private String companyId;
     private String userName;
     private String password;
     private String salt;
+    private String isLogin;
+    private String createTime;
 
     public UserPo(){
+
     }
 
-    public UserPo(String userId, String userName, String password){
+    public UserPo(String userId,String userName){
         this.userId = userId;
         this.userName = userName;
-        this.password = password;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getUserId() {
@@ -66,5 +59,21 @@ public class UserPo {
 
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public String getIsLogin() {
+        return isLogin;
+    }
+
+    public void setIsLogin(String isLogin) {
+        this.isLogin = isLogin;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

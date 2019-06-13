@@ -9,7 +9,9 @@ import com.order.machine.po.UserPo;
  */
 public interface IUserService {
 
-    boolean verifyUser(UserPo userPo);
+    UserPo verifyUser(UserPo userPo);
 
-    void registerUser(String userId, String userName, String password);
+    void registerUser(String userName, String password);
+
+    void updateUser(UserPo userPo);
 }

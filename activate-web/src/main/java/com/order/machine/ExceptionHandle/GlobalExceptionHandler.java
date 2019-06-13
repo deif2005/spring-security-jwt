@@ -1,6 +1,5 @@
 package com.order.machine.ExceptionHandle;
 
-import com.alibaba.fastjson.JSON;
 import com.order.machine.ImportInfoConfig;
 import com.order.machine.common_const.CommonEnum;
 import com.order.machine.exception.LogicException;
@@ -9,10 +8,12 @@ import com.order.machine.model.RestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public String exceptionHandler(HttpServletRequest request, Exception e, HttpServletResponse response) {
+    public Object exceptionHandler(HttpServletRequest request, Exception e, HttpServletResponse response) {
 
         //系统级异常，错误码固定为-1，提示语固定为系统繁忙，请稍后再试
         RestResult result = new RestResult(false, CommonEnum.ReturnCode.SystemCode.sys_err_exception.getValue(),
@@ -53,9 +54,17 @@ public class GlobalExceptionHandler {
         } else if (e instanceof MissingServletRequestParameterException){
             result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_paramerror.getValue());
             result.setErrorMessage("请求参数错误");
-        } else
+        } else if (e instanceof HttpRequestMethodNotSupportedException){
+            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_paramerror.getValue());
+            result.setErrorMessage("请求方法类型错误");
+        } else if (e instanceof MethodArgumentTypeMismatchException){
+            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_argumenttype.getValue());
+            result.setErrorMessage("参数类型错误");
+        }
+        else
             //对系统级异常进行日志记录
             logger.error("系统异常:" + e.getMessage(), e);
-        return JSON.toJSONString(result);
+//        return JSON.toJSONString(result);
+        return result;
     }
 }

@@ -40,12 +40,20 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    final String[] notLoginInterceptPaths = {
+            "/user/v1/userLogin",
+            "/index/**",
+            "/user/v1/register",
+            "/order/v1/activateMachine"
+    };
+
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/image/**").permitAll() //静态资源访问无需认证
+                .antMatchers(notLoginInterceptPaths).permitAll()
                 .antMatchers("/admin/**").hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
                 .antMatchers("/article/**").hasRole("USER") //需登陆才能访问的url
                 .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
