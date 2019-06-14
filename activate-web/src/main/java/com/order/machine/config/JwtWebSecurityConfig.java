@@ -1,17 +1,13 @@
 package com.order.machine.config;
 
 import com.order.machine.service.impl.security.JwtAuthenticationProvider;
-import com.order.machine.service.impl.security.handler.JwtRefreshSuccessHandler;
-import com.order.machine.service.impl.security.handler.LoginAuthenticationSuccessHandler;
+import com.order.machine.service.impl.security.handler.*;
 import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import com.order.machine.service.impl.security.component.AccessDecisionManagerImpl;
-import com.order.machine.service.impl.security.handler.CustomAccessDeniedHandler;
 import com.order.machine.service.impl.security.component.FilterInvocationSecurityMetadataSourceImpl;
 import com.order.machine.service.impl.security.config.JsonLoginConfigurer;
 import com.order.machine.service.impl.security.config.JwtConfigurer;
-import com.order.machine.service.impl.security.handler.TokenClearLogoutHandler;
 import com.order.machine.service.impl.security.filter.OptionsRequestFilter;
-import com.order.machine.service.impl.security.handler.CustomLogoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,6 +69,10 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     CustomAccessDeniedHandler customAccessDeniedHandler;
     @Autowired
     CustomLogoutHandler customLogoutHandler;
+    @Autowired
+    MyAccessDeniedHandler myAccessDeniedHandler;
+    @Autowired
+    CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -120,9 +120,12 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/user/v1/logout")
                 //logout时清除token
                 .addLogoutHandler(customLogoutHandler)
-                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
+                .logoutSuccessHandler(customLogoutSuccessHandler)
+//                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
         .and()
-                .sessionManagement().disable();
+                .sessionManagement().disable()
+                .exceptionHandling()
+                .accessDeniedHandler(myAccessDeniedHandler);
     }
 
     @Override

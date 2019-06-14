@@ -21,7 +21,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,AccessDeniedException
             accessDeniedException) throws IOException, ServletException {
-        //系统级异常，错误码固定为-1，提示语固定为系统繁忙，请稍后再试
         RestResult result = new RestResult(false, CommonEnum.ReturnCode.SystemCode.sys_err_noauth.getValue(),
                 null, CommonEnum.ReturnMsg.SystemMsg.sys_err_noauth.getValue());
         response.setContentType("application/json");
