@@ -7,6 +7,7 @@ import com.order.machine.po.UserPo;
 import com.order.machine.redis.RedisConstants;
 import com.order.machine.redis.RedisUtil;
 import com.order.machine.service.IUserService;
+import com.order.machine.service.impl.security.UserDetailsServiceImpl;
 import com.wd.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "user")
 public class LoginController {
+
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     private final static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
@@ -102,17 +106,11 @@ public class LoginController {
 
     /**
      * 注销
-     * @param request
+     * @param userName
      * @return
      */
     @PostMapping(value = "v1/logout")
-    public void logout(HttpServletRequest request){
-        String token = request.getHeader("token");
-        String userName = request.getHeader("userName");
-        UserPo userPo = new UserPo();
-        userPo.setUserName(userName);
-        userPo.setIsLogin("0");
-        userService.updateUser(userPo);
-        redisUtil.del(String.format(RedisConstants.LOGIN_INFO,userName,token));
+    public void logout(@RequestParam("userName") String userName){
+        userDetailsService.deleteUserLoginInfo(userName);
     }
 }

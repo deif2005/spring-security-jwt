@@ -33,10 +33,12 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
         RestResult result = new RestResult(false, CommonEnum.ReturnCode.SystemCode.sys_err_exception.getValue(),
                 null, CommonEnum.ReturnMsg.SystemMsg.sys_err_exception.getValue());
 //        sb.append("{\"status\":\"error\",\"msg\":\"");
-        if (e instanceof UsernameNotFoundException || e instanceof BadCredentialsException) {
+        if (e instanceof UsernameNotFoundException) {
             result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_login_userorpassword_error.getValue());
             result.setErrorMessage("用户名或密码输入错误，登录失败!");
-//            sb.append("用户名或密码输入错误，登录失败!");
+        } else if (e instanceof BadCredentialsException){
+            result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_login_overdue_error.getValue());
+            result.setErrorMessage("用户验证信息已失效!");
         } else if (e instanceof DisabledException) {
             result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_account_expired.getValue());
             result.setErrorMessage("账户被禁用，登录失败，请联系管理员!");

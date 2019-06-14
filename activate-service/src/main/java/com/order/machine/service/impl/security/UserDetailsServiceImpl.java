@@ -2,11 +2,14 @@ package com.order.machine.service.impl.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.order.machine.common_const.CommonConst;
 import com.order.machine.mapper.RoleMapper;
 import com.order.machine.mapper.UserMapper;
 import com.order.machine.mapper.UserRoleMapper;
 import com.order.machine.po.UserPo;
 import com.order.machine.po.UserRolePo;
+import com.order.machine.redis.RedisConstants;
+import com.order.machine.redis.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author miou
@@ -32,6 +36,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     UserMapper userMapper;
     @Autowired
     RoleMapper roleMapper;
+    @Autowired
+    RedisUtil redisUtil;
 
     @Transactional
     public List<UserPo> getByUserName(String userName)
@@ -47,11 +53,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return
      */
     public UserDetails getUserLoginInfo(String username) {
-        String salt = "123456ef";
-        /**
-         * @todo 从数据库或者缓存中取出jwt token生成时用的salt
-         * salt = redisTemplate.opsForValue().get("token:"+username);
-         */
+//        String salt = "123456ef";
+        String salt = String.valueOf(redisUtil.get(String.format(RedisConstants.LOGIN_TOKEN,username)));
         UserDetails user = loadUserByUsername(username);
         //将salt放到password字段返回
         return User.builder().username(user.getUsername()).password(salt).authorities(user.getAuthorities()).build();
@@ -63,13 +66,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return
      */
     public String saveUserLoginInfo(UserDetails user) {
-        String salt = "123456ef";
         //正式开发时可以调用该方法实时生成加密的salt
-//        BCrypt.gensalt();
-        /**
-         * @todo 将salt保存到数据库或者缓存中
-         * redisTemplate.opsForValue().set("token:"+username, salt, 3600, TimeUnit.SECONDS);
-         */
+        String salt = BCrypt.gensalt();
+        redisUtil.set(String.format(RedisConstants.LOGIN_TOKEN,user.getUsername()),salt,CommonConst.LOGININFO_EXPIRED);
         Algorithm algorithm = Algorithm.HMAC256(salt);
         Date date = new Date(System.currentTimeMillis()+3600*1000);  //设置1小时后过期
         return JWT.create()
@@ -100,9 +99,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user,roleMapper.getRoleByUserName(user.getUserName()));
     }
 
+    /**
+     * 清除数据库或者缓存中登录salt
+     * @param username
+     */
     public void deleteUserLoginInfo(String username) {
-        /**
-         * @todo 清除数据库或者缓存中登录salt
-         */
+        redisUtil.del(String.format(RedisConstants.LOGIN_TOKEN,username));
     }
 }

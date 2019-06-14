@@ -196,7 +196,7 @@ public enum CommonEnum {
             user_login_sms_code_error("1002"),
             //用户登录信息已过期,请重新登录
             user_login_overdue_error("1003"),
-            //修改手机号码失败
+            //账号已过期
             user_account_expired("1004"),
             //验证码错误
             user_err_code("1005"),
