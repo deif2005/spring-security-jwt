@@ -37,12 +37,10 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                         Authentication authentication) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
-//        String jwt = jwtUtil.getToken(new UserPo(null,userDetails.getUsername(),userDetails.getPassword()));
         String jwt = userDetailsService.saveUserLoginInfo(userDetails);
         httpServletResponse.setContentType("application/json;charset=utf-8");
         httpServletResponse.setHeader("Authorization",jwt);
         PrintWriter out = httpServletResponse.getWriter();
-//        String s = "{\"status\":\"success\",\"msg\":"+ "登录成功}";
         RestResult result = new RestResult(true, ReturnCode.SystemCode.SYS_SUCCESS.getValue(), "", null);
         out.write(JSON.toJSONString(result));
         out.flush();

@@ -47,8 +47,6 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
             username = jsonObj.getString("userName");
             password = jsonObj.getString("password");
         }
-//        username = httpServletRequest.getParameter("userName");
-//        password = httpServletRequest.getParameter("password");
         if (username == null)
             username = "";
         if (password == null)
