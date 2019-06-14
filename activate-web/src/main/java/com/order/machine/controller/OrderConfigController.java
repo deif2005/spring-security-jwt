@@ -24,6 +24,11 @@ public class OrderConfigController {
     @Autowired
     IOrderConfigService orderConfigService;
 
+    @RequestMapping("/v1/testSecurity")
+    public String testSecurity(){
+        return "test success";
+    }
+
     @PostMapping("/v1/addOrderConfig")
     public String addOrderConfig(){
         orderConfigService.importOrderConfigInfo("");

@@ -44,7 +44,7 @@ public class UserServiceImpl implements IUserService {
         criteria.andEqualTo("userName",userPo.getUserName());
         UserPo user = userMapper.selectOneByExample(example);
         if (null == user){
-            throw LogicException.le(CommonEnum.ReturnCode.UserLoginCode.user_login_UserNotExists.getValue(),
+            throw LogicException.le(CommonEnum.ReturnCode.UserLoginCode.user_login_userorpassword_error.getValue(),
                     "该用户不存在");
         }
         String pw = MD5Utils.getMD5(userPo.getPassword() + user.getSalt());
@@ -70,7 +70,7 @@ public class UserServiceImpl implements IUserService {
                     "用户名已存在");
         }
         String salt = VertifyCodeUtil.getRandromNum();
-        String pwd = new BCryptPasswordEncoder().encode(password + salt); //+ salt
+        String pwd = new BCryptPasswordEncoder().encode(password); //+ salt
         UserPo user = new UserPo();
         user.setUserName(userName);
         user.setPassword(pwd);

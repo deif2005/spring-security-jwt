@@ -13,5 +13,8 @@ public class CommonConst {
 
     public static final String LOGIN_KEY="LOGIN_KEY";
 
-    public static final Integer LOGININFO_EXPIRED=6000;
+    public static final Integer LOGININFO_EXPIRED=300;
+
+    public static final int TOKEN_REFRESH_INTERVAL = 300;  //刷新间隔5分钟
+
 }

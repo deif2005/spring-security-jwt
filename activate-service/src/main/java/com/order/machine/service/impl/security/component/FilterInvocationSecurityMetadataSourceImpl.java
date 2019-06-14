@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * @author miou
  * @date 2019-05-08
+ * 根据请求获取对应的访问权限，给访问控制类校验当前用户是否有此权限
  */
 @Component
 public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocationSecurityMetadataSource {
@@ -34,20 +35,17 @@ public class FilterInvocationSecurityMetadataSourceImpl implements FilterInvocat
         //得到用户的请求地址,控制台输出一下
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
         System.out.println("用户请求的地址是：" + requestUrl);
-
         //如果登录页面就不需要权限
-        if ("/login".equals(requestUrl)) {
-            return null;
-        }
+//        if ("/login".equals(requestUrl)) {
+//            return null;
+//        }
         ResourcePo res = new ResourcePo();
         res.setUrl(requestUrl);
         ResourcePo resource = resourceMapper.selectOne(res);
-
         //如果没有匹配的url则说明大家都可以访问
         if(resource == null) {
             return SecurityConfig.createList("ROLE_LOGIN");
         }
-
         //将resource所需要到的roles按框架要求封装返回（ResourceService里面的getRoles方法是基于RoleRepository实现的）
         List<RolePo> roles = roleMapper.getRoleByResource(resource.getId());
         int size = roles.size();

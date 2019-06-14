@@ -67,7 +67,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor { //OncePer
             }
             UserPo user = userMapper.selectOne (new UserPo(userId,null));
             if (user == null) {
-                throw LogicException.le(CommonEnum.ReturnCode.UserLoginCode.user_login_UserNotExists.getValue(),
+                throw LogicException.le(CommonEnum.ReturnCode.UserLoginCode.user_login_userorpassword_error.getValue(),
                         "用户未注册");
             }
             // 验证 token

@@ -42,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     /**
-     * 根据用户名获取用户信息，封装成UserDetails
+     * 根据用户名获取用户信息，封装成UserDetails，提供给验证provider使用
      * @param username
      * @return
      */

@@ -153,7 +153,7 @@ public enum CommonEnum {
             //消息代码说明:
             sys_ok("0"), //0,操作成功;
             sys_err_exception("0999"), //0999,操作失败(未知异常)
-            sys_err_noauth("0001"),//0001,您没有该项操作的权利;
+            sys_err_noauth("0403"),//0001,您没有该项操作的权利;
             sys_err_tokeninvalid("0002"), //0002,token信息已失效
             sys_err_paramerror("0003"), //0003,参数错误
             sys_err_argumenttype("0004"),  //参数类型错误
@@ -191,13 +191,13 @@ public enum CommonEnum {
         //用户登录反馈信息
         enum UserLoginCode implements ReturnCode {
             //该用户未注册
-            user_login_UserNotExists("1001"),
+            user_login_userorpassword_error("1001"),
             //验证码错误
             user_login_sms_code_error("1002"),
             //用户登录信息已过期,请重新登录
             user_login_overdue_error("1003"),
             //修改手机号码失败
-            user_err_updateMobile("1004"),
+            user_account_expired("1004"),
             //验证码错误
             user_err_code("1005"),
             //此手机已被使用
@@ -243,7 +243,7 @@ public enum CommonEnum {
             //0999,操作失败
             sys_ok("操作成功"),
             sys_err_exception("操作失败"),
-            sys_err_noauth("您没有该项操作的权利"),
+            sys_err_noauth("您没有该项操作的权限"),
             sys_err_tokeninvalid("用户未登录"),
             sys_err_paramerror("参数错误"),
             sys_err_rpcserviceerror("rpc服务出错"),

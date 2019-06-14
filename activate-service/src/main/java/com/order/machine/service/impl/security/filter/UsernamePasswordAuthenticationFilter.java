@@ -26,7 +26,7 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
 
     //拦截url为 "/login" 的POST请求
     public UsernamePasswordAuthenticationFilter(){
-        super(new AntPathRequestMatcher("/login", "POST"));
+        super(new AntPathRequestMatcher("/user/v1/login", "POST"));
     }
 
     @Override
@@ -44,9 +44,11 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
         String username = null, password = null;
         if(StringUtils.hasText(body)) {
             JSONObject jsonObj = JSON.parseObject(body);
-            username = jsonObj.getString("username");
+            username = jsonObj.getString("userName");
             password = jsonObj.getString("password");
         }
+//        username = httpServletRequest.getParameter("userName");
+//        password = httpServletRequest.getParameter("password");
         if (username == null)
             username = "";
         if (password == null)

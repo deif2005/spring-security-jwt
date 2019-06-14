@@ -105,7 +105,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.error("An internal error occurred while trying to authenticate the user.", failed);
             failed = e;
         }catch (AuthenticationException e) {
-            // Authentication failed
             failed = e;
         }
         if(authResult != null) {   //token认证成功

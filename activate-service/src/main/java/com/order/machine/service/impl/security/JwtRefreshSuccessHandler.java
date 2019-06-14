@@ -1,8 +1,8 @@
 package com.order.machine.service.impl.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.order.machine.common_const.CommonConst;
 import com.order.machine.service.impl.security.config.JwtAuthenticationToken;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,13 +18,10 @@ import java.util.Date;
 /**
  * @author miou
  * @date 2019-05-15
+ * jwt刷新,jwt的刷新和salt盐值的留存时间不同，jwt刷新是限制jwt被盗用后的时长
+ * salt盐值是用户登录后的保活时长，失效后需要重新登录
  */
 public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
-
-    private static final int tokenRefreshInterval = 300;  //刷新间隔5分钟
-
-//    @Autowired
-//    UserDetailsServiceImpl userDetailsService;
 
     private UserDetailsServiceImpl userDetailsService;
 
@@ -32,6 +29,14 @@ public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * token验证成功后的回调，用于处理验证码刷新等业务
+     * @param httpServletRequest
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -43,8 +48,13 @@ public class JwtRefreshSuccessHandler implements AuthenticationSuccessHandler {
         }
     }
 
+    /**
+     * 是否刷新验证信息
+     * @param issueAt
+     * @return
+     */
     protected boolean shouldTokenRefresh(Date issueAt){
         LocalDateTime issueTime = LocalDateTime.ofInstant(issueAt.toInstant(), ZoneId.systemDefault());
-        return LocalDateTime.now().minusSeconds(tokenRefreshInterval).isAfter(issueTime);
+        return LocalDateTime.now().minusSeconds(CommonConst.TOKEN_REFRESH_INTERVAL).isAfter(issueTime);
     }
 }

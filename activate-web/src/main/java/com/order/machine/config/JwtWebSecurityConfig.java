@@ -4,6 +4,9 @@ import com.order.machine.service.impl.security.JwtAuthenticationProvider;
 import com.order.machine.service.impl.security.JwtRefreshSuccessHandler;
 import com.order.machine.service.impl.security.LoginAuthenticationSuccessHandler;
 import com.order.machine.service.impl.security.UserDetailsServiceImpl;
+import com.order.machine.service.impl.security.component.AccessDecisionManagerImpl;
+import com.order.machine.service.impl.security.component.CustomAccessDeniedHandler;
+import com.order.machine.service.impl.security.component.FilterInvocationSecurityMetadataSourceImpl;
 import com.order.machine.service.impl.security.config.JsonLoginConfigurer;
 import com.order.machine.service.impl.security.config.JwtConfigurer;
 import com.order.machine.service.impl.security.config.TokenClearLogoutHandler;
@@ -14,12 +17,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.header.Header;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
@@ -47,41 +52,59 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/order/v1/activateMachine"
     };
 
+    //根据一个url请求，获得访问它所需要的roles权限
+    @Autowired
+    FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource;
+    //接收一个用户的信息和访问一个url所需要的权限，判断该用户是否可以访问
+    @Autowired
+    AccessDecisionManagerImpl myAccessDecisionManager;
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/image/**").permitAll() //静态资源访问无需认证
-                .antMatchers(notLoginInterceptPaths).permitAll()
-                .antMatchers("/admin/**").hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
-                .antMatchers("/article/**").hasRole("USER") //需登陆才能访问的url
-                .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
-                .and()
-                .csrf().disable()  //CSRF禁用，因为不使用session
-                .sessionManagement().disable()  //禁用session
-                .formLogin().disable() //禁用form登录
-                .cors()  //支持跨域
-                .and()   //添加header设置，支持跨域和ajax请求
-                .headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
-                new Header("Access-control-Allow-Origin","*"),
-                new Header("Access-Control-Expose-Headers","Authorization"))))
-                .and() //拦截OPTIONS请求，直接返回header
-                .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
-                //添加登录filter
-                .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler())
-                .and()
-                //添加token的filter
-                .apply(new JwtConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler())
-                .permissiveRequestUrls("/logout")
-                .and()
-                //使用默认的logoutFilter
-                .logout()
+        http.authorizeRequests().withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+            @Override
+            public <O extends FilterSecurityInterceptor> O postProcess(O o) {
+                o.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
+                o.setAccessDecisionManager(myAccessDecisionManager);
+                return o;
+            }
+        })
+        .antMatchers("/image/**").permitAll() //静态资源访问无需认证
+        .antMatchers(notLoginInterceptPaths).permitAll()
+        .antMatchers("/admin/**").hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
+        .antMatchers("/article/**").hasRole("USER") //需登陆才能访问的url
+        .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
+        .and()
+        .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler) //捕获权限拦截异常
+        .and()
+        .csrf().disable()  //CSRF禁用，因为不使用session
+        .sessionManagement().disable()  //禁用session
+        .formLogin().disable() //禁用form登录
+        .cors()  //支持跨域
+        .and()   //添加header设置，支持跨域和ajax请求
+        .headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
+        new Header("Access-control-Allow-Origin","*"),
+        new Header("Access-Control-Expose-Headers","Authorization"))))
+        .and() //拦截OPTIONS请求，直接返回header
+        .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
+        //添加登录filter
+        .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler())
+        .and()
+        //添加token的filter
+        .apply(new JwtConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler())
+        .permissiveRequestUrls("/logout")
+        .and()
+        //使用默认的logoutFilter
+        .logout()
 //              .logoutUrl("/logout")   //默认就是"/logout"
-                .addLogoutHandler(tokenClearLogoutHandler())  //logout时清除token
-                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
-                .and()
-                .sessionManagement().disable();
+        .addLogoutHandler(tokenClearLogoutHandler())  //logout时清除token
+        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
+        .and()
+        .sessionManagement().disable();
     }
 
     @Override

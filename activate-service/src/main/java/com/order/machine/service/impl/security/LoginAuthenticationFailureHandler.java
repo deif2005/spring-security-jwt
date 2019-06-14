@@ -1,5 +1,9 @@
 package com.order.machine.service.impl.security;
 
+import com.alibaba.fastjson.JSON;
+import com.order.machine.common_const.CommonEnum;
+import com.order.machine.exception.LogicException;
+import com.order.machine.model.RestResult;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
@@ -25,16 +29,27 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
         httpServletResponse.setContentType("application/json;charset=utf-8");
         PrintWriter out = httpServletResponse.getWriter();
         StringBuffer sb = new StringBuffer();
-        sb.append("{\"status\":\"error\",\"msg\":\"");
+        //系统级异常，错误码固定为-1，提示语固定为系统繁忙，请稍后再试
+        RestResult result = new RestResult(false, CommonEnum.ReturnCode.SystemCode.sys_err_exception.getValue(),
+                null, CommonEnum.ReturnMsg.SystemMsg.sys_err_exception.getValue());
+//        sb.append("{\"status\":\"error\",\"msg\":\"");
         if (e instanceof UsernameNotFoundException || e instanceof BadCredentialsException) {
-            sb.append("用户名或密码输入错误，登录失败!");
+            result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_login_userorpassword_error.getValue());
+            result.setErrorMessage("用户名或密码输入错误，登录失败!");
+//            sb.append("用户名或密码输入错误，登录失败!");
         } else if (e instanceof DisabledException) {
-            sb.append("账户被禁用，登录失败，请联系管理员!");
+            result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_account_expired.getValue());
+            result.setErrorMessage("账户被禁用，登录失败，请联系管理员!");
+//            sb.append("账户被禁用，登录失败，请联系管理员!");
         } else {
-            sb.append("登录失败!");
+            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_tokeninvalid.getValue());
+            result.setErrorMessage("非法访问");
+//            LogicException.le(CommonEnum.ReturnCode.SystemCode.sys_err_tokeninvalid.getValue(),"非法访问");
+//            sb.append("非法访问");
         }
-        sb.append("\"}");
-        out.write(sb.toString());
+//        sb.append("\"}");
+//        out.write(sb.toString());
+        out.write(JSON.toJSONString(result));
         out.flush();
         out.close();
     }

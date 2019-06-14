@@ -22,12 +22,12 @@ import java.util.Iterator;
 public class AccessDecisionManagerImpl implements AccessDecisionManager {
 
     @Override
-    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, InsufficientAuthenticationException {
+    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws
+            AccessDeniedException, InsufficientAuthenticationException {
         //迭代器遍历目标url的权限列表
         Iterator<ConfigAttribute> iterator = collection.iterator();
         while (iterator.hasNext()) {
             ConfigAttribute ca = iterator.next();
-
             String needRole = ca.getAttribute();
             if ("ROLE_LOGIN".equals(needRole)) {
                 if (authentication instanceof AnonymousAuthenticationToken) {
@@ -35,7 +35,6 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                 } else
                     return;
             }
-
             //遍历当前用户所具有的权限
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             for (GrantedAuthority authority : authorities) {
@@ -44,7 +43,6 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                 }
             }
         }
-
         //执行到这里说明没有匹配到应有权限
         throw new AccessDeniedException("权限不足!");
     }

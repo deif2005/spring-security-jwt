@@ -51,11 +51,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         if(user == null || user.getPassword()==null)
             throw new NonceExpiredException("Token expires");
         String encryptSalt = user.getPassword();
-        try {
+        try {//验证token
             Algorithm algorithm = Algorithm.HMAC256(encryptSalt);
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .withSubject(username)
-                    .build();
+            JWTVerifier verifier = JWT.require(algorithm).withSubject(username).build();
             verifier.verify(jwt.getToken());
         } catch (Exception e) {
             throw new BadCredentialsException("JWT token verify fail", e);

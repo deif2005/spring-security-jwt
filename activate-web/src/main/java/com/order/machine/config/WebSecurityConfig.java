@@ -68,8 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**定义安全策略*/
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()       //配置安全策略
-                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+        http.authorizeRequests().withObjectPostProcessor(
+                new ObjectPostProcessor<FilterSecurityInterceptor>() {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O o) {
                         o.setSecurityMetadataSource(filterInvocationSecurityMetadataSource);
