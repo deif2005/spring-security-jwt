@@ -112,8 +112,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .apply(new JsonLoginConfigurer<>())
                 .loginSuccessHandler(jsonLoginSuccessHandler())
         .and()  //添加token的filter
-                .apply(new JwtConfigurer<>()).
-                tokenValidSuccessHandler(jwtRefreshSuccessHandler())
+                .apply(new JwtConfigurer<>())
+                .tokenValidSuccessHandler(jwtRefreshSuccessHandler())
                 .permissiveRequestUrls("/logout")
         .and()  //使用默认的logoutFilter
                 .logout()
@@ -123,9 +123,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(customLogoutSuccessHandler)
 //                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
         .and()
-                .sessionManagement().disable()
-                .exceptionHandling()
-                .accessDeniedHandler(myAccessDeniedHandler);
+                .sessionManagement().disable();
     }
 
     @Override
