@@ -1,17 +1,15 @@
 package com.order.machine.config;
 
-import com.order.machine.service.impl.security.LoginAuthenticationFailureHandler;
-import com.order.machine.service.impl.security.LoginAuthenticationSuccessHandler;
-import com.order.machine.service.impl.security.UserDetailsServiceImpl;
+import com.order.machine.service.impl.security.handler.LoginAuthenticationFailureHandler;
+import com.order.machine.service.impl.security.handler.LoginAuthenticationSuccessHandler;
+import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import com.order.machine.service.impl.security.component.AccessDecisionManagerImpl;
 import com.order.machine.service.impl.security.component.FilterInvocationSecurityMetadataSourceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;

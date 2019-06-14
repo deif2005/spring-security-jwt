@@ -1,16 +1,17 @@
 package com.order.machine.config;
 
 import com.order.machine.service.impl.security.JwtAuthenticationProvider;
-import com.order.machine.service.impl.security.JwtRefreshSuccessHandler;
-import com.order.machine.service.impl.security.LoginAuthenticationSuccessHandler;
-import com.order.machine.service.impl.security.UserDetailsServiceImpl;
+import com.order.machine.service.impl.security.handler.JwtRefreshSuccessHandler;
+import com.order.machine.service.impl.security.handler.LoginAuthenticationSuccessHandler;
+import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import com.order.machine.service.impl.security.component.AccessDecisionManagerImpl;
-import com.order.machine.service.impl.security.component.CustomAccessDeniedHandler;
+import com.order.machine.service.impl.security.handler.CustomAccessDeniedHandler;
 import com.order.machine.service.impl.security.component.FilterInvocationSecurityMetadataSourceImpl;
 import com.order.machine.service.impl.security.config.JsonLoginConfigurer;
 import com.order.machine.service.impl.security.config.JwtConfigurer;
-import com.order.machine.service.impl.security.config.TokenClearLogoutHandler;
+import com.order.machine.service.impl.security.handler.TokenClearLogoutHandler;
 import com.order.machine.service.impl.security.filter.OptionsRequestFilter;
+import com.order.machine.service.impl.security.handler.CustomLogoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,9 +48,17 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     final String[] notLoginInterceptPaths = {
             "/user/v1/userLogin",
-            "/index/**",
             "/user/v1/register",
             "/order/v1/activateMachine"
+    };
+
+    final String[] adminInterceptPaths = {
+            "/admin/**"
+    };
+
+    final String[] userInterceptPaths = {
+            "/data/**",
+            "/order/**"
     };
 
     //根据一个url请求，获得访问它所需要的roles权限
@@ -62,6 +71,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     UserDetailsServiceImpl userDetailsService;
     @Autowired
     CustomAccessDeniedHandler customAccessDeniedHandler;
+    @Autowired
+    CustomLogoutHandler customLogoutHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -73,44 +84,51 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 return o;
             }
         })
-        .antMatchers("/image/**").permitAll() //静态资源访问无需认证
-        .antMatchers(notLoginInterceptPaths).permitAll()
-        .antMatchers("/admin/**").hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
-        .antMatchers("/article/**").hasRole("USER") //需登陆才能访问的url
-        .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
+                .antMatchers("/image/**").permitAll() //静态资源访问无需认证
+                .antMatchers(notLoginInterceptPaths).permitAll()
+                .antMatchers(adminInterceptPaths).hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
+                .antMatchers(userInterceptPaths).hasRole("USER") //需登陆才能访问的url
+                .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
         .and()
-        .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler) //捕获权限拦截异常
+                .exceptionHandling()
+                .accessDeniedHandler(customAccessDeniedHandler) //捕获权限拦截异常
         .and()
-        .csrf().disable()  //CSRF禁用，因为不使用session
-        .sessionManagement().disable()  //禁用session
-        .formLogin().disable() //禁用form登录
-        .cors()  //支持跨域
-        .and()   //添加header设置，支持跨域和ajax请求
-        .headers().addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
-        new Header("Access-control-Allow-Origin","*"),
-        new Header("Access-Control-Expose-Headers","Authorization"))))
-        .and() //拦截OPTIONS请求，直接返回header
-        .addFilterAfter(new OptionsRequestFilter(), CorsFilter.class)
-        //添加登录filter
-        .apply(new JsonLoginConfigurer<>()).loginSuccessHandler(jsonLoginSuccessHandler())
+                //CSRF禁用，因为不使用session
+                .csrf().disable()
+                //禁用session
+                .sessionManagement().disable()
+                //禁用form登录
+                .formLogin().disable()
+                .cors()  //支持跨域
+                //添加header设置，支持跨域和ajax请求
         .and()
-        //添加token的filter
-        .apply(new JwtConfigurer<>()).tokenValidSuccessHandler(jwtRefreshSuccessHandler())
-        .permissiveRequestUrls("/logout")
+                .headers()
+                .addHeaderWriter(new StaticHeadersWriter(Arrays.asList(
+                        new Header("Access-control-Allow-Origin","*"),
+                        new Header("Access-Control-Expose-Headers","Authorization"))))
+        .and()  //拦截OPTIONS请求，直接返回header
+                .addFilterAfter(new OptionsRequestFilter(),CorsFilter.class)
+                //添加登录filter
+                .apply(new JsonLoginConfigurer<>())
+                .loginSuccessHandler(jsonLoginSuccessHandler())
+        .and()  //添加token的filter
+                .apply(new JwtConfigurer<>()).
+                tokenValidSuccessHandler(jwtRefreshSuccessHandler())
+                .permissiveRequestUrls("/logout")
+        .and()  //使用默认的logoutFilter
+                .logout()
+                .logoutUrl("/user/v1/logout")
+                //logout时清除token
+                .addLogoutHandler(customLogoutHandler)
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
         .and()
-        //使用默认的logoutFilter
-        .logout()
-//              .logoutUrl("/logout")   //默认就是"/logout"
-        .addLogoutHandler(tokenClearLogoutHandler())  //logout时清除token
-        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()) //logout成功后返回200
-        .and()
-        .sessionManagement().disable();
+                .sessionManagement().disable();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(daoAuthenticationProvider()).authenticationProvider
-                (jwtAuthenticationProvider());
+        auth.authenticationProvider(daoAuthenticationProvider())
+                .authenticationProvider(jwtAuthenticationProvider());
     }
 
     @Bean("daoAuthenticationProvider")
@@ -126,11 +144,6 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected UserDetailsService userDetailsService() {
         return userDetailsService;
     }
-
-//    @Bean("userDetailsService")
-//    protected UserDetailsServiceImpl userDetailsService() {
-//        return new UserDetailsServiceImpl();
-//    }
 
     @Bean("jwtAuthenticationProvider")
     protected AuthenticationProvider jwtAuthenticationProvider() {

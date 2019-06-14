@@ -1,11 +1,9 @@
-package com.order.machine.service.impl.security.config;
+package com.order.machine.service.impl.security.handler;
 
-import com.order.machine.service.impl.security.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

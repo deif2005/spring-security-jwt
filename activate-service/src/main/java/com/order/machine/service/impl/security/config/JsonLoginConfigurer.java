@@ -1,6 +1,6 @@
 package com.order.machine.service.impl.security.config;
 
-import com.order.machine.service.impl.security.LoginAuthenticationFailureHandler;
+import com.order.machine.service.impl.security.handler.LoginAuthenticationFailureHandler;
 import com.order.machine.service.impl.security.filter.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;

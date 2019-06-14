@@ -7,7 +7,7 @@ import com.order.machine.po.UserPo;
 import com.order.machine.redis.RedisConstants;
 import com.order.machine.redis.RedisUtil;
 import com.order.machine.service.IUserService;
-import com.order.machine.service.impl.security.UserDetailsServiceImpl;
+import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import com.wd.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
@@ -109,7 +108,7 @@ public class LoginController {
      * @param userName
      * @return
      */
-    @PostMapping(value = "v1/logout")
+//    @PostMapping(value = "v1/logout")
     public void logout(@RequestParam("userName") String userName){
         userDetailsService.deleteUserLoginInfo(userName);
     }

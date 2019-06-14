@@ -1,4 +1,4 @@
-package com.order.machine.service.impl.security.component;
+package com.order.machine.service.impl.security.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.order.machine.common_const.CommonEnum;
