@@ -17,15 +17,9 @@ import java.io.PrintWriter;
 /**
  * @author miou
  * @date 2019-05-13
+ * 登录成功处理类
  */
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-//    @Autowired
-//    RedisUtil redisUtil;
-//    @Autowired
-//    JwtUtil jwtUtil;
-//    @Autowired
-//    UserDetailsServiceImpl userDetailsService;
 
     private UserDetailsServiceImpl userDetailsService;
 
@@ -33,6 +27,14 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
         this.userDetailsService = userDetailsService;
     }
 
+    /**
+     * 生成jwt，并返回
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                         Authentication authentication) throws IOException, ServletException {

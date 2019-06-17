@@ -1,4 +1,4 @@
-package com.order.machine.service.impl.security.config;
+package com.order.machine.service.impl.security.component;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

@@ -2,7 +2,7 @@ package com.order.machine.service.impl.security.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.order.machine.service.impl.security.config.JwtAuthenticationToken;
+import com.order.machine.service.impl.security.component.JwtAuthenticationToken;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;

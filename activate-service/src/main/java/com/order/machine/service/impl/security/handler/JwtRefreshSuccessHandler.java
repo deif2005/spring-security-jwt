@@ -3,7 +3,7 @@ package com.order.machine.service.impl.security.handler;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.order.machine.common_const.CommonConst;
 import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
-import com.order.machine.service.impl.security.config.JwtAuthenticationToken;
+import com.order.machine.service.impl.security.component.JwtAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

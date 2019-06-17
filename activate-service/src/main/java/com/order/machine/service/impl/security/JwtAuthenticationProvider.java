@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
-import com.order.machine.service.impl.security.config.JwtAuthenticationToken;
+import com.order.machine.service.impl.security.component.JwtAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

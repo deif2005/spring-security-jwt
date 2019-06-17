@@ -70,8 +70,6 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     CustomLogoutHandler customLogoutHandler;
     @Autowired
-    MyAccessDeniedHandler myAccessDeniedHandler;
-    @Autowired
     CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Override
