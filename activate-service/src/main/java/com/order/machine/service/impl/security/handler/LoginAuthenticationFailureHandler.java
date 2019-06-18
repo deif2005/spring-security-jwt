@@ -9,6 +9,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.www.NonceExpiredException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
@@ -33,25 +34,20 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
         //系统级异常，错误码固定为-1，提示语固定为系统繁忙，请稍后再试
         RestResult result = new RestResult(false, CommonEnum.ReturnCode.SystemCode.sys_err_exception.getValue(),
                 null, CommonEnum.ReturnMsg.SystemMsg.sys_err_exception.getValue());
-//        sb.append("{\"status\":\"error\",\"msg\":\"");
         if (e instanceof UsernameNotFoundException) {
             result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_login_userorpassword_error.getValue());
             result.setErrorMessage("用户名或密码输入错误，登录失败!");
-        } else if (e instanceof BadCredentialsException){
+        } else if (e instanceof BadCredentialsException || e instanceof NonceExpiredException){
             result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_login_overdue_error.getValue());
             result.setErrorMessage("用户验证信息已失效!");
         } else if (e instanceof DisabledException) {
             result.setCode(CommonEnum.ReturnCode.UserLoginCode.user_account_expired.getValue());
             result.setErrorMessage("账户被禁用，登录失败，请联系管理员!");
-//            sb.append("账户被禁用，登录失败，请联系管理员!");
-        } else {
-            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_tokeninvalid.getValue());
-            result.setErrorMessage("非法访问");
-//            LogicException.le(CommonEnum.ReturnCode.SystemCode.sys_err_tokeninvalid.getValue(),"非法访问");
-//            sb.append("非法访问");
         }
-//        sb.append("\"}");
-//        out.write(sb.toString());
+        else {
+            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_tokeninvalid.getValue());
+            result.setErrorMessage("无效JWT");
+        }
         out.write(JSON.toJSONString(result));
         out.flush();
         out.close();

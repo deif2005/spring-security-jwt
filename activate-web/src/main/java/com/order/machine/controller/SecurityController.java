@@ -1,16 +1,18 @@
 package com.order.machine.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author miou
  * @date 2019-05-08
  */
-@Controller
+@RestController
 public class SecurityController {
-//    @GetMapping(value = "/login")
-//    public String login() {
-//        return "myLoginPage";
-//    }
+
+    @PostMapping(value = "/test/anonymous")
+    public void anonymous(){
+        System.out.println("anonymous");
+    }
 }

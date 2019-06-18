@@ -31,7 +31,6 @@ public class JsonLoginConfigurer <T extends JsonLoginConfigurer<T, B>, B extends
         authFilter.setAuthenticationFailureHandler(new LoginAuthenticationFailureHandler());
         //不将认证后的context放入session
         authFilter.setSessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy());
-
         UsernamePasswordAuthenticationFilter filter = postProcess(authFilter);
         //指定Filter的位置
         http.addFilterAfter(filter, LogoutFilter.class);

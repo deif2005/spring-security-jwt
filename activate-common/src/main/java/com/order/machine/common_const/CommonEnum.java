@@ -161,7 +161,7 @@ public enum CommonEnum {
             sys_err_uploadFile("0006"),   //文件上传失败
             sys_err_noaudiofile("0007"),  //未发现音频文件
             sys_err_noimagefile("0008"),  //未发现图片文件
-            sys_err_businessException("0009") //业务异常统一代号
+            sys_err_resourcenotfound("0404") //资源不存在
                     {
                 @Override
                 public boolean isRest() {

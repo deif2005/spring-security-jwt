@@ -49,7 +49,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String username = jwt.getSubject();
         UserDetails user = userDetailsService.getUserLoginInfo(username);
         if(user == null || user.getPassword()==null)
-            throw new NonceExpiredException("Token expires");
+            throw new NonceExpiredException("用户或密码错误");
         String encryptSalt = user.getPassword();
         try {//验证token
             Algorithm algorithm = Algorithm.HMAC256(encryptSalt);

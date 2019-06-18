@@ -4,9 +4,9 @@ import com.order.machine.service.impl.security.JwtAuthenticationProvider;
 import com.order.machine.service.impl.security.handler.*;
 import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import com.order.machine.service.impl.security.component.AccessDecisionManagerImpl;
-import com.order.machine.service.impl.security.component.FilterInvocationSecurityMetadataSourceImpl;
+import com.order.machine.service.impl.security.component.FilterRequestAuthListImpl;
 import com.order.machine.service.impl.security.config.JsonLoginConfigurer;
-import com.order.machine.service.impl.security.config.JwtConfigurer;
+import com.order.machine.service.impl.security.config.JwtVerifyConfigurer;
 import com.order.machine.service.impl.security.filter.OptionsRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.header.Header;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -43,8 +42,10 @@ import java.util.Arrays;
 public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     final String[] notLoginInterceptPaths = {
+            "/image/**",
             "/user/v1/userLogin",
             "/user/v1/register",
+            "/user/anonymous",
             "/order/v1/activateMachine"
     };
 
@@ -59,7 +60,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     //根据一个url请求，获得访问它所需要的roles权限
     @Autowired
-    FilterInvocationSecurityMetadataSourceImpl filterInvocationSecurityMetadataSource;
+    FilterRequestAuthListImpl filterInvocationSecurityMetadataSource;
     //接收一个用户的信息和访问一个url所需要的权限，判断该用户是否可以访问
     @Autowired
     AccessDecisionManagerImpl myAccessDecisionManager;
@@ -82,8 +83,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 return o;
             }
         })
-                .antMatchers("/image/**").permitAll() //静态资源访问无需认证
-                .antMatchers(notLoginInterceptPaths).permitAll()
+                .antMatchers(notLoginInterceptPaths).permitAll() //会适配AnonymousAuthenticationToken
                 .antMatchers(adminInterceptPaths).hasAnyRole("ADMIN") //admin开头的请求，需要admin权限
                 .antMatchers(userInterceptPaths).hasRole("USER") //需登陆才能访问的url
                 .anyRequest().authenticated()  //默认其它的请求都需要认证，这里一定要添加
@@ -110,9 +110,9 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .apply(new JsonLoginConfigurer<>())
                 .loginSuccessHandler(jsonLoginSuccessHandler())
         .and()  //添加token的filter
-                .apply(new JwtConfigurer<>())
+                .apply(new JwtVerifyConfigurer<>())
                 .tokenValidSuccessHandler(jwtRefreshSuccessHandler())
-                .permissiveRequestUrls("/logout")
+                .permissiveRequestUrls("/user/logout")
         .and()  //使用默认的logoutFilter
                 .logout()
                 .logoutUrl("/user/v1/logout")

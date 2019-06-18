@@ -21,12 +21,15 @@ import java.nio.charset.Charset;
 /**
  * @author miou
  * @date 2019-05-14
+ * 登录信息验证
  */
 public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    //拦截url为 "/login" 的POST请求
+    final static String loginUrl = "/user/v1/login";
+
+    //拦截url为 "/user/v1/login" 的POST请求
     public UsernamePasswordAuthenticationFilter(){
-        super(new AntPathRequestMatcher("/user/v1/login", "POST"));
+        super(new AntPathRequestMatcher(loginUrl, "POST"));
     }
 
     @Override

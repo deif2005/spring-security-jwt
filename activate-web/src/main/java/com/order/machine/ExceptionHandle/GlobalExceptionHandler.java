@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +61,9 @@ public class GlobalExceptionHandler {
         } else if (e instanceof MethodArgumentTypeMismatchException){
             result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_argumenttype.getValue());
             result.setErrorMessage("参数类型错误");
+        } else if (e instanceof NoHandlerFoundException) {
+            result.setCode(CommonEnum.ReturnCode.SystemCode.sys_err_resourcenotfound.getValue());
+            result.setErrorMessage("访问的资源不存在");
         }
         else
             //对系统级异常进行日志记录

@@ -81,14 +81,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         //header没带token的，直接放过，因为部分url匿名用户也可以访问
-        //如果需要不支持匿名用户的请求没带token，这里放过也没问题，因为SecurityContext中没有认证信息，
-        //后面会被权限控制模块拦截
+        //如果不支持不带token的匿名用户的请求，这里放过也没问题，
+        //因为SecurityContext中没有认证信息，后面会被权限控制模块拦截
+        Authentication authResult = null;
+        AuthenticationException failed = null;
         if (!requiresAuthentication(request, response)) {
             filterChain.doFilter(request, response);
             return;
+//            failed = new InsufficientAuthenticationException("JWT is Empty");
+//            unsuccessfulAuthentication(request, response, failed);
+//            return;
         }
-        Authentication authResult = null;
-        AuthenticationException failed = null;
         try {
             //从头中获取token并封装后提交给AuthenticationManager
             String token = getJwtToken(request);
@@ -100,7 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch(JWTDecodeException e) {
             logger.error("JWT format error", e);
-            failed = new InsufficientAuthenticationException("JWT format error", failed);
+            failed = new InsufficientAuthenticationException("JWT format error", e);
         }catch (InternalAuthenticationServiceException e) {
             logger.error("An internal error occurred while trying to authenticate the user.", failed);
             failed = e;

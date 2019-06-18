@@ -1,5 +1,7 @@
 package com.order.machine.service.impl.security.component;
 
+import com.order.machine.common_const.CommonEnum;
+import com.order.machine.exception.LogicException;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -34,6 +36,10 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                     throw new BadCredentialsException("未登录");
                 } else
                     return;
+            } else if ("ROLE_ANONYMOUS".equals(needRole)){
+                if (authentication instanceof AnonymousAuthenticationToken) {
+                    return;
+                }
             }
             //遍历当前用户所具有的权限
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -43,8 +49,11 @@ public class AccessDecisionManagerImpl implements AccessDecisionManager {
                 }
             }
         }
+//        LogicException.le(CommonEnum.ReturnCode.SystemCode.sys_err_noauth.getValue(),
+//                CommonEnum.ReturnMsg.SystemMsg.sys_err_noauth.getValue());
         //执行到这里说明没有匹配到应有权限
         throw new AccessDeniedException("权限不足!");
+//        throw new InsufficientAuthenticationException("权限不足");
     }
 
     @Override
