@@ -88,9 +88,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!requiresAuthentication(request, response)) {
             filterChain.doFilter(request, response);
             return;
-//            failed = new InsufficientAuthenticationException("JWT is Empty");
-//            unsuccessfulAuthentication(request, response, failed);
-//            return;
         }
         try {
             //从头中获取token并封装后提交给AuthenticationManager

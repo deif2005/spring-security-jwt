@@ -54,7 +54,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         try {//验证token
             Algorithm algorithm = Algorithm.HMAC256(encryptSalt);
             JWTVerifier verifier = JWT.require(algorithm).withSubject(username).build();
-            verifier.verify(jwt.getToken());
+//            DecodedJWT verifiedJwt = verifier.verify(jwt.getToken());
+//            System.out.println(verifiedJwt.getToken());
         } catch (Exception e) {
             throw new BadCredentialsException("JWT token verify fail", e);
         }
