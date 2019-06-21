@@ -105,11 +105,10 @@ public class LoginController {
 
     /**
      * 注销
-     * @param userName
      * @return
      */
     @PostMapping(value = "logout")
-    public void logout(){ //@RequestParam("userName") String userName
+    public void logout(){
         System.out.println("test logout");
 //        userDetailsService.deleteUserLoginInfo(userName);
     }
