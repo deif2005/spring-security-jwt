@@ -109,6 +109,5 @@ public class LoginController {
      */
     @PostMapping(value = "logout")
     public void logout(){
-//        userDetailsService.deleteUserLoginInfo(userName);
     }
 }
