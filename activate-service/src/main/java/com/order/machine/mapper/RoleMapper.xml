@@ -20,6 +20,17 @@
         WHERE a.id=b.role_id AND b.resource_id=${resourceId}
     </select>
 
-     
+    <select id="getMenuResourceByUserName" resultType="com.order.machine.po.MenuPo">
+        SELECT
+        b.id,
+        b.name,
+        b.level,
+        b.parent_id,
+        b.sort,
+        b.status,
+        b.creater
+        FROM tb_role_menu a,tb_menu_resource b,tb_user_role c
+        WHERE a.menu_resource_id=b.id AND a.role_id=c.role_id AND c.user_name=#{userName}
+    </select>
 
 </mapper>
