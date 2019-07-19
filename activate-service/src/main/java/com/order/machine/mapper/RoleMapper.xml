@@ -20,4 +20,6 @@
         WHERE a.id=b.role_id AND b.resource_id=${resourceId}
     </select>
 
+     
+
 </mapper>
