@@ -4,7 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.order.machine.common_const.CommonConst;
 import com.order.machine.mapper.RoleMapper;
+import com.order.machine.mapper.RoleResourceMapper;
 import com.order.machine.mapper.UserMapper;
+import com.order.machine.po.MenuPo;
 import com.order.machine.po.UserPo;
 import com.order.machine.redis.RedisConstants;
 import com.order.machine.redis.RedisUtil;
@@ -36,6 +38,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     RoleMapper roleMapper;
     @Autowired
     RedisUtil redisUtil;
+    @Autowired
+    RoleResourceMapper roleResourceMapper;
 
     @Transactional
     public List<UserPo> getByUserName(String userName)
@@ -95,6 +99,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //查到User后将其封装为UserDetails的实现类的实例供程序调用
         //用该User和它对应的Role实体们构造UserDetails的实现类
         return new UserDetailsImpl(user,roleMapper.getRoleByUserName(user.getUserName()));
+    }
+
+    /**
+     * 获取用户菜单及页面资源
+     * @param username
+     * @return
+     */
+    public List<MenuPo> getUserMenu(String username){
+        List<MenuPo> menuPoList = roleResourceMapper.getMenuResourceByUserName(username);
+        return menuPoList;
     }
 
     /**

@@ -17,5 +17,4 @@ public interface RoleMapper extends Mapper<RolePo>{
 
     List<RolePo> getRoleByResource(@Param("resourceId") Integer resourceId);
 
-    List<MenuPo> getMenuResourceByUserName(String userName);
 }

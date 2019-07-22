@@ -3,6 +3,7 @@ package com.order.machine.service.impl.security.handler;
 import com.alibaba.fastjson.JSON;
 import com.order.machine.model.RestResult;
 import com.order.machine.model.ReturnCode;
+import com.order.machine.po.MenuPo;
 import com.order.machine.service.impl.security.component.UserDetailsImpl;
 import com.order.machine.service.impl.security.component.UserDetailsServiceImpl;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * @author miou
@@ -40,10 +42,11 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
                                         Authentication authentication) throws IOException, ServletException {
         UserDetailsImpl userDetails = (UserDetailsImpl)authentication.getPrincipal();
         String jwt = userDetailsService.saveUserLoginInfo(userDetails);
+        List<MenuPo> menuPoList = userDetailsService.getUserMenu(userDetails.getUsername());
         httpServletResponse.setContentType("application/json;charset=utf-8");
         httpServletResponse.setHeader("Authorization",jwt);
         PrintWriter out = httpServletResponse.getWriter();
-        RestResult result = new RestResult(true, ReturnCode.SystemCode.SYS_SUCCESS.getValue(), "", null);
+        RestResult result = new RestResult(true, ReturnCode.SystemCode.SYS_SUCCESS.getValue(), menuPoList, null);
         out.write(JSON.toJSONString(result));
         out.flush();
         out.close();
