@@ -130,10 +130,16 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationProvider(jwtAuthenticationProvider());
     }
 
+    /**
+     * 鉴权实体类，用于设置加密方式，用户名密码处理实现类设置，异常类型设置等
+     * @return
+     * @throws Exception
+     */
     @Bean("daoAuthenticationProvider")
     protected AuthenticationProvider daoAuthenticationProvider() throws Exception{
         //这里会默认使用BCryptPasswordEncoder比对加密后的密码，注意要跟createUser时保持一致
         DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
+        daoProvider.setHideUserNotFoundExceptions(false);
         daoProvider.setPasswordEncoder(new BCryptPasswordEncoder());
         daoProvider.setUserDetailsService(userDetailsService());
         return daoProvider;
