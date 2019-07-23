@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.order.machine.mapper.RoleMapper">
+<mapper namespace="com.security.jwt.mapper.RoleMapper">
 
-    <select id="getRoleByUserName" resultType="com.order.machine.po.RolePo">
+    <select id="getRoleByUserName" resultType="com.security.jwt.po.RolePo">
         SELECT
           a.id,
           a.role_name,
@@ -11,7 +11,7 @@
         WHERE a.id=b.role_id AND b.user_name=#{userName}
     </select>
 
-    <select id="getRoleByResource" resultType="com.order.machine.po.RolePo">
+    <select id="getRoleByResource" resultType="com.security.jwt.po.RolePo">
         SELECT
         a.id,
         a.role_name,

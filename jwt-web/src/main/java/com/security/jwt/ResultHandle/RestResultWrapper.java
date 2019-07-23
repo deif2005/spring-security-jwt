@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * @Author cjy
  * @Date 2019/2/14
  **/
-@ControllerAdvice(basePackages = "com.order.machine.controller")
+@ControllerAdvice(basePackages = "com.security.jwt.controller")
 public class RestResultWrapper implements ResponseBodyAdvice<Object> {
 
     /**
