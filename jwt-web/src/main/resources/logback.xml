@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false" scan="false" scanPeriod="30 seconds">
     <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-    <property name="LOG_HOME" value="/home/logs/machine_activate_web/" />
+    <property name="LOG_HOME" value="/home/logs/jwt_web/" />
     <!--/home/logs/machine_activate_web/-->
 
     <!-- info级别-->
@@ -98,7 +98,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.wd.question.dao" level="debug" additivity="true">
+    <logger name="com.security.jwt.dao" level="debug" additivity="true">
         <appender-ref ref="JDBC" />
         <appender-ref ref="CONSOLE"/>
     </logger>
